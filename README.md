@@ -17,4 +17,4 @@ yz = np.zeros(ix1.shape)
 ds9 = pd.Series(yz, index=ix1)
 ```
 
-In 
+In line 1, we create the mindate and maxdate to be the 
