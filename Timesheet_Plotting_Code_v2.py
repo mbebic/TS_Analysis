@@ -14,6 +14,7 @@ import csv
 import matplotlib.backends.backend_pdf as dpdf
 import matplotlib.dates as mdates
 import datetime as datetime
+import os
 
 
 # this function allows us to use matplotlib library of datetime. This is able to 
@@ -23,11 +24,19 @@ import datetime as datetime
 def projects_by_employee_daterange(pltPdf1, df1a, axis_title=None, plot_size=(6.5,4.8)):
     fig, (ax0) = plt.subplots(nrows=1, ncols=1, figsize=plot_size, sharex=True)
     
+
     # this reads todays date
     x1 = datetime.datetime.now()
     # this reads the date 10 weeks prior to todays date
     x2 = x1 + datetime.timedelta(weeks = -10)
     employees = df1a['Employee'].unique()
+    
+    mindate, maxdate = df1['Day'].agg(['min','max'])
+    ix1 = pd.date_range(mindate,maxdate,freq='1D')
+    yz = np.zeros(ix1.shape)
+    # df9 = pd.DataFrame({'yz': yz}, index=ix1)
+    ds9 = pd.Series(yz, index=ix1)
+    
     
     for e in employees:
         df1b = df1a[df1a['Employee'] == e]
@@ -36,9 +45,11 @@ def projects_by_employee_daterange(pltPdf1, df1a, axis_title=None, plot_size=(6.
         
         x = df1d.index.values
         y = df1d['Duration'].values #duration of values per day
-        # y1 = df1c['Duration'].cumsum().values #value of cumulative duration for project alpha
+        yz = ds9.loc[x]
         
-        ax0.bar(x,y, alpha=0.5)
+        ax0.bar(x, y, bottom = yz, alpha=0.5)
+        ds9.loc[x] += y
+        
             
     if axis_title is not None:
         ax0.set_title(axis_title)
@@ -46,7 +57,7 @@ def projects_by_employee_daterange(pltPdf1, df1a, axis_title=None, plot_size=(6.
     ax0.grid(True)
     ax0.legend(employees, loc = 'upper left')
     
-    # ax0.set_xticks(x1)
+    ax0.set_xlim([x2,x1])
     ax0.set_xlabel('Day')
     dtFmt = mdates.DateFormatter('%m'+'/'+'%d') # define the formatting
     ax0.xaxis.set_major_formatter(dtFmt) # apply the format to the desired axis
@@ -66,7 +77,9 @@ if __name__ == "__main__":
     
     # Reading the input data. Use pandas dataframes to hold data 
     # because they are very flexible
-    df1 = pd.read_csv('Clockify_Time_Report_Detailed_2021-01-01-2021-12-31.csv', # Clockify_Time_Report_Detailed_2021-01-01-2021-12-31.csv
+    datadir = 'Data'
+    fname = 'Clockify_Time_Report_Detailed_2021-01-01-2021-12-31.csv'
+    df1 = pd.read_csv(os.path.join(datadir, fname), # Clockify_Time_Report_Detailed_2021-01-01-2021-12-31.csv
                        usecols=(0,4,8,13),
                       names=['Project', 'Employee',  'Day', 'Duration'], header=0,
                       comment='#',
