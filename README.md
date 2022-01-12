@@ -10,10 +10,10 @@ The x1 variable will read the current date, and x2 will read the date from 10 we
 
 To create the ability to stack the plots, we had to use a pandas series function to increment where the previous employees cumulative hours stopped, so the next employees cumulative hours that are graphed are not starting from y=0 position, but rather the position of the first employees cumulative hours. The code block is as follows:
 
-''' python
+```python
 mindate, maxdate = df1['Day'].agg(['min','max'])
 ix1 = pd.date_range(mindate,maxdate,freq='1D')
 yz = np.zeros(ix1.shape)
 ds9 = pd.Series(yz, index=ix1)
-'''
+```
 
