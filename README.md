@@ -33,7 +33,7 @@ ds9.loc[x] += y
 In line 1 and 2, we are pulling the value of the datetime and the duration of hours worked respectively. We set yz to ds9.loc[x] to create a placeholder series where we know what days employee 1 worked. Then, the bar chart is plotted with the bottom position being yz. For employee 1, the yz position will be 0. Then, the crucial line of code is the last line. This increments each position (ds9.loc[x]) in the ds9 panda series with the last known hour position of employee 1 [y]. By doing this, the yz values change to the values of duration from employee 1. Then, once the for loop begins again with employee 2, the same process will repeat and their respective hours will be added to the ds9 pandas series. This avoids overlapping of hours worked by each employee. I will provide an example of the methodology of this.
 
 ``` python
-CODE BLOCK 3
+# CODE BLOCK 3
 # employee 1 hours: 1
 # employee 2 hours: 3 
 # both worked on the same day, 2022-01-07
