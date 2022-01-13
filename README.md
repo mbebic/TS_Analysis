@@ -44,13 +44,13 @@ yz = ds9.loc[x]
 # this starts out as zeros, as described in code block 1.
 
 # for employee 1, the plotting will read
-ax0.bar(2022-01-07, 1, bottom = 0)
-ds9.loc[x] += y # or in this case, ds9.loc[x] += 1
+ax0.bar(2022-01-07, 1, bottom = yz) # yz is 0
+ds9.loc[x] += y # in this case, ds9.loc[x] += 1
 
 # ds9.loc[x], or yz, has now turned into 1 for the corresponding date of 2022-01-07.
 # when the for loop begins again for employee 2, this is how the plot will read
 
-ax0.bar(2022-01-07, 3, bottom = 1)
-ds9.loc[x] += y # or in this case, ds9.loc[x] += 3
+ax0.bar(2022-01-07, 3, bottom = yz) # yz is 1
+ds9.loc[x] += y # in this case, ds9.loc[x] += 3
 # ds9.loc[x], or yz, has now turned into 4 (1+3) for the corresponding date of 2022-01-07.
 ```
