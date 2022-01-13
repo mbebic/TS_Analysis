@@ -108,7 +108,6 @@ def employees_by_project_daterange(pltPdf1, df1a, axis_title=None, plot_size=(6.
 
     return
 
-
 if __name__ == "__main__":
 
     # If changing basicConfig, make sure to close the dedicated console; it will not take otherwise
@@ -146,12 +145,19 @@ if __name__ == "__main__":
             
             projects_by_employee_daterange(pltPdf1, df1a, axis_title=p)
             
-    if True:
+    if False:
         
         for e in employees:
             df1a = df1[df1['Employee'] == e]
             
             employees_by_project_daterange(pltPdf1, df1a, axis_title=e)
+            
+    if True:
+        
+        for e in employees:
+            df1a = df1[df1['Employee'] == e]
+            
+            employees_by_project_daterange_cumsum(pltPdf1, df1a, axis_title=e)
             
 
     print('Closing pdf file')
