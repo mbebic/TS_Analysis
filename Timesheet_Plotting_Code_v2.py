@@ -73,6 +73,8 @@ def employees_by_project_daterange(pltPdf1, df1a, axis_title=None, plot_size=(6.
     # this reads the date 10 weeks prior to todays date
     x2 = x1 + datetime.timedelta(weeks = -10)
     projects = df1a['Project'].unique()
+    projects.sort()
+    plist = projects.tolist()
     
     mindate, maxdate = df1['Day'].agg(['min','max'])
     ix1 = pd.date_range(mindate,maxdate,freq='1D')
@@ -96,7 +98,7 @@ def employees_by_project_daterange(pltPdf1, df1a, axis_title=None, plot_size=(6.
         ax0.set_title(axis_title)
 
     ax0.grid(True)
-    ax0.legend(projects, loc = 'upper left')
+    ax0.legend(plist, loc = 'upper left')
     
     ax0.set_xlim([x2,x1])
     ax0.set_xlabel('Day')
@@ -111,38 +113,13 @@ def employees_by_project_daterange(pltPdf1, df1a, axis_title=None, plot_size=(6.
 def employees_by_project_daterange_cumsum(pltPdf1, df1a, axis_title=None, plot_size=(6.5,4.8)):
     fig, (ax0) = plt.subplots(nrows=1, ncols=1, figsize=plot_size, sharex=True)
     
-    # temp = df1a['Day'].unique()
-    # x1 = np.arange(temp.min(), temp.max()+1,1)
-    # y1 = np.zeros_like(x1, dtype=float)
-    
-    # # extract unique employees, sort alphabetically and add to list to
-    # # enable creating the legend
-    # elist = np.sort(df1a['Employee'].unique()).tolist()
-    
-    # for e in elist:
-    #     df1b = df1a[df1a['Employee'] == e]
-    #     df1c = df1b.groupby(by=['Day']).sum()
-        
-    #     x = df1c.index.values
-    #     y = df1c['Duration'].cumsum().values
-        
-    #     y2 = np.zeros_like(y1)
-    #     y2[x-1] = y
-                  
-    #     for i in range(1, len(y2)):
-    #         y2[i] = y2[i-1] if y2[i] == 0 else y2[i]
-
-    #     ax0.fill_between(x1, y1, y1+y2)
-    #     y1 += y2               
-    
-    # y1 = df1c['Duration'].cumsum().values #value of cumulative duration for project alpha
-        
-    
     # this reads todays date
     x1 = datetime.datetime.now()
     # this reads the date 10 weeks prior to todays date
     x2 = x1 + datetime.timedelta(weeks = -10)
     projects = df1a['Project'].unique()
+    projects.sort()
+    plist = projects.tolist()
     
     mindate, maxdate = df1['Day'].agg(['min','max'])
     ix1 = pd.date_range(mindate,maxdate,freq='1D')
@@ -175,7 +152,61 @@ def employees_by_project_daterange_cumsum(pltPdf1, df1a, axis_title=None, plot_s
         ax0.set_title(axis_title)
 
     ax0.grid(True)
-    ax0.legend(projects, loc = 'upper left')
+    ax0.legend(plist, loc = 'upper left')
+    
+    ax0.set_xlim([x2,x1])
+    ax0.set_xlabel('Day')
+    dtFmt = mdates.DateFormatter('%m'+'/'+'%d') # define the formatting
+    ax0.xaxis.set_major_formatter(dtFmt) # apply the format to the desired axis
+    
+    pltPdf1.savefig()
+    plt.close()
+
+    return
+
+def projects_by_employee_daterange_cumsum(pltPdf1, df1a, axis_title=None, plot_size=(6.5,4.8)):
+    fig, (ax0) = plt.subplots(nrows=1, ncols=1, figsize=plot_size, sharex=True)
+    
+    # this reads todays date
+    x1 = datetime.datetime.now()
+    # this reads the date 10 weeks prior to todays date
+    x2 = x1 + datetime.timedelta(weeks = -10)
+    employees = df1a['Employee'].unique()
+    employees.sort()
+    elist = employees.tolist()
+    
+    mindate, maxdate = df1['Day'].agg(['min','max'])
+    ix1 = pd.date_range(mindate,maxdate,freq='1D')
+    yz1 = np.zeros(ix1.shape)
+    ds1 = pd.Series(yz1, index=ix1, copy=True) 
+    # Pandas unique situation! If copy is not set to True, the series
+    # will get a view of the data so the data will be changed whenever
+    # the series is changed. BEWARE - the default value of copy is set to false.
+    
+    for e in employees:
+
+        df1b = df1a[df1a['Employee'] == e]
+        df1c = df1b[(df1b['Day'] >= x2) & (df1b['Day'] <= x1)]
+        df1d = df1c.groupby(by=['Day']).sum() #sum of the hours worked on project alpha per day
+        
+        x = df1d.index.values
+        y = df1d['Duration'].values #duration of values per day
+        y1 = df1d['Duration'].cumsum().values #value of cumulative duration for project alpha
+        ds1.loc[:] = 0.
+        ds1.loc[x] = y1
+        
+        for d in ix1[1:]:
+            ds1.loc[d] = ds1.loc[d+datetime.timedelta(days = -1)] if ds1.loc[d] == 0 else ds1.loc[d]
+            
+        ax0.fill_between(ix1, yz1, yz1 + ds1.values)
+        yz1 += ds1.values
+       
+     
+    if axis_title is not None:
+        ax0.set_title(axis_title)
+
+    ax0.grid(True)
+    ax0.legend(elist, loc = 'upper left')
     
     ax0.set_xlim([x2,x1])
     ax0.set_xlabel('Day')
@@ -231,12 +262,19 @@ if __name__ == "__main__":
             
             employees_by_project_daterange(pltPdf1, df1a, axis_title=e)
             
-    if True:
+    if False:
         
         for e in employees:
             df1a = df1[df1['Employee'] == e]
             
             employees_by_project_daterange_cumsum(pltPdf1, df1a, axis_title=e)
+            
+    if True:
+        
+        for p in projects:
+            df1a = df1[df1['Project'] == p]
+            
+            projects_by_employee_daterange_cumsum(pltPdf1, df1a, axis_title=p)
             
 
     print('Closing pdf file')
