@@ -228,7 +228,7 @@ if __name__ == "__main__":
     # Reading the input data. Use pandas dataframes to hold data 
     # because they are very flexible
     datadir = 'Data'
-    fname = 'Clockify_Time_Report_Detailed_2021-01-01-2021-12-31.csv'
+    fname = 'Sample-Timesheet-Data.csv' #'Clockify_Time_Report_Detailed_2021-01-01-2021-12-31.csv'
     df1 = pd.read_csv(os.path.join(datadir, fname), # Clockify_Time_Report_Detailed_2021-01-01-2021-12-31.csv
                        usecols=(0,4,8,13),
                       names=['Project', 'Employee',  'Day', 'Duration'], header=0,
@@ -238,7 +238,7 @@ if __name__ == "__main__":
                       )
     
     # Open a pdf file to save the plots
-    pltPdf1  = dpdf.PdfPages('Timesheet_BarChart.pdf')
+    pltPdf1  = dpdf.PdfPages('Timesheet_BarChart_Projects_By_Employee_Cumulative.pdf')
     
     projects = df1['Project'].unique()
     employees = df1['Employee'].unique()
