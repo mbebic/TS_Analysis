@@ -1,14 +1,44 @@
 # Timesheet Analysis.
 
-This Repository will contain functions designed for analysis and plotting of timesheet information. This type of tangible information is incredibly useful to any project manager or team leader that would like to have plotted data of hours worked on particular projects by certain employees. This type of code was developed out of a need for this type of data plotting, but without paying extra premiums on timesheet applications on the web. We wanted to be able to fully customize what we wanted to see, and have oversight on the development.
+This Repository will contain functions designed for analysis and plotting of timesheet information. 
+This type of tangible information is incredibly useful to any project manager or team leader that would like to have plotted data of hours worked on particular projects by certain employees. 
+This type of code was developed out of a need for this type of data plotting, but without paying extra premiums on timesheet applications on the web.
+We wanted to be able to fully customize what we wanted to see, and have oversight on the development.
 
-Within Timesheet_Plotting_Code_v2.py, the first plotting function exists, titled 'projects_by_employee_daterange'. This function allows us to use the datetime library from pandas. This allow us to create calendar formatted dates (2022-01-01) instead of using integer values (Day 1, Day 2, etc.). Using calendar dates is more realistic to every day life, as well as minimizes confusion and error when analyzing and inputting timesheets.
 
-We also wanted to be able to stack the bar chart values for each day that people worked on various projects. This creates an easier way to visualize the amount of time each employee spends on any given project.
+## Test Group 
 
-The x1 variable will read the current date, and x2 will read the date from 10 weeks prior. This value can be changed, and the increment can be changed to days, months, etc. Then, it filters for each employee within your data frame and puts them into the variable employees. 
+We had three "employees" - Harry Potter, Hermione Granger and Ron Weasley.
+They were working on 4 different projects during their time at Hogwarts - Project Alpha, Beta, Gamma, and Delta, and received Holiday Pay as well.
+They were instructed to input their hours for each project accordingly.
+We wanted to be able to compare the time each of them spent on the various projects.
 
-To create the ability to stack the plots, we had to use a pandas series function to increment where the previous employees cumulative hours stopped, so the next employees cumulative hours that are graphed are not starting from y=0 position, but rather the position of the first employees cumulative hours. The code block is as follows:
+## Graphs
+
+In "Timesheet_BarChart_Employees_By_Project.pdf", we see each employees breakdown of hours over an 8 hour day spent on each project in the span of two months.
+
+In "Timesheet_BarChart_Projects_By_Employee.pdf", we see each project with the amount of hours each employee spent on them within an 8 hour day in the span of two months.
+
+In "Timesheet_BarChart_Employees_By_Project_Cumulative.pdf", we see a cumulative hours stacked chart for each employees contribution to each project. This is useful to see if there was one project that an employee spent a lot of time on, if there was an equal distribution of hours across all projects, etc.
+
+In "Timesheet_BarChart_Projects_By_Employee_Cumulative.pdf", we see a cumulative hours stacked chart for each project and the employees contribution to each project. This is useful to see if there was an equal contribution from each employee on each project, or if there is disparity in the hours.
+
+
+## Code Explanation - How We Plotted
+Within Timesheet_Plotting_Code_v2.py, the first plotting function exists, titled 'projects_by_employee_daterange'.
+This function allows us to use the datetime library from pandas.
+This allow us to create calendar formatted dates (2022-01-01) instead of using integer values (Day 1, Day 2, etc.).
+Using calendar dates is more realistic to every day life, as well as minimizes confusion and error when analyzing and inputting timesheets.
+
+We also wanted to be able to stack the bar chart values for each day that people worked on various projects.
+This creates an easier way to visualize the amount of time each employee spends on any given project.
+
+The x1 variable will read the current date, and x2 will read the date from 10 weeks prior.
+This value can be changed, and the increment can be changed to days, months, etc.
+Then, it filters for each employee within your data frame and puts them into the variable employees. 
+
+To create the ability to stack the plots, we had to use a pandas series function to increment where the previous employees cumulative hours stopped, so the next employees cumulative hours that are graphed are not starting from y=0 position, but rather the position of the first employees cumulative hours.
+The code block is as follows:
 
 ```python
 # CODE BLOCK 1
@@ -18,7 +48,12 @@ yz = np.zeros(ix1.shape)
 ds9 = pd.Series(yz, index=ix1)
 ```
 
-In line 1, we create the mindate and maxdate to be the first and last date of the csv file we have imported. Next, we create a date range between those two dates and assign it to the ix1 variable. We create yz to be filled with zeros and the same shape as ix1. Finally, we create a pandas series with yz and the index set to ix1. This is essentially a 1D array that can hold data of any type. This will help us with incrementing the positions of the hours worked by employee 1, and stack the hours worked by employee 2 on the last known hour position of employee 1, instead of overlapping.
+In line 1, we create the mindate and maxdate to be the first and last date of the csv file we have imported.
+Next, we create a date range between those two dates and assign it to the ix1 variable.
+We create yz to be filled with zeros and the same shape as ix1.
+Finally, we create a pandas series with yz and the index set to ix1.
+This is essentially a 1D array that can hold data of any type.
+This will help us with incrementing the positions of the hours worked by employee 1, and stack the hours worked by employee 2 on the last known hour position of employee 1, instead of overlapping.
 
 ```python
 # CODE BLOCK 2
@@ -30,7 +65,16 @@ ax0.bar(x, y, bottom = yz, alpha=0.5)
 ds9.loc[x] += y
 ```
 
-In line 1 and 2, we are pulling the value of the datetime and the duration of hours worked respectively. We set yz to ds9.loc[x] to create a placeholder series where we know what days employee 1 worked. Then, the bar chart is plotted with the bottom position being yz. For employee 1, the yz position will be 0. Then, the crucial line of code is the last line. This increments each position (ds9.loc[x]) in the ds9 panda series with the last known hour position of employee 1 [y]. By doing this, the yz values change to the values of duration from employee 1. Then, once the for loop begins again with employee 2, the same process will repeat and their respective hours will be added to the ds9 pandas series. This avoids overlapping of hours worked by each employee. I will provide an example of the methodology of this.
+In line 1 and 2, we are pulling the value of the datetime and the duration of hours worked respectively.
+We set yz to ds9.loc[x] to create a placeholder series where we know what days employee 1 worked.
+Then, the bar chart is plotted with the bottom position being yz.
+For employee 1, the yz position will be 0.
+Then, the crucial line of code is the last line.
+This increments each position (ds9.loc[x]) in the ds9 panda series with the last known hour position of employee 1 [y].
+By doing this, the yz values change to the values of duration from employee 1.
+Then, once the for loop begins again with employee 2, the same process will repeat and their respective hours will be added to the ds9 pandas series.
+This avoids overlapping of hours worked by each employee.
+I will provide an example of the methodology of this.
 
 ``` python
 # CODE BLOCK 3
